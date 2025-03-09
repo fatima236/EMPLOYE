@@ -1,0 +1,324 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Profils{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #2C3E50;">Liste des Profils</h1>
+
+    <!-- Formulaire de recherche -->
+  <form method="get" action="{{ path('profile_index') }}" class="mb-4 d-flex justify-content-center">
+    <div class="input-group w-50">
+        <!-- Champ de recherche avec l'icône à l'intérieur -->
+        <input type="text" name="specialite" class="form-control" placeholder="Rechercher par spécialité" value="{{ app.request.get('specialite') }}" style="border-radius: 30px; border: 2px solid #580800; padding-left: 35px;">
+        <button type="submit" class="btn" style=" color: #580800; border-radius: 30px; padding: 8px 20px; font-weight: bold; position: absolute; right: 10px; border-left: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-search" style="font-size: 18px;"></i>
+        </button>
+    </div>
+</form>
+
+
+    <!-- Bouton Ajouter un Profil -->
+ <div class="d-flex justify-content-end mb-4">
+    <a href="{{ path('profile_create') }}" class="btn" style="background: linear-gradient(135deg, #580800, #dfba69,rgb(77, 43, 22)); color: white; border-radius: 30px; padding: 12px 30px; font-size: 16px; letter-spacing: 2px; font-family: 'Roboto', sans-serif; transition: all 0.3s ease; display: inline-block;">
+        <i class="bi bi-plus-circle" style="margin-right: 8px;"></i> Ajouter un Profil
+    </a>
+    <a href="{{ path('reservation_list') }}" class="btn" style="background: linear-gradient(135deg, #580800, #dfba69,rgb(77, 43, 22)); color: white; border-radius: 30px; padding: 12px 30px; font-size: 16px; letter-spacing: 2px; font-family: 'Roboto', sans-serif; transition: all 0.3s ease; display: inline-block; margin-left: 10px;">
+        <i class="bi bi-calendar-check" style="margin-right: 8px;"></i> Réservations
+    </a>
+</div>
+
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for profile in profiles %}
+    <div class="col">
+        <div class="card h-100 shadow-lg border-0 rounded-3" style="transition: transform 0.3s; cursor: pointer; background-color: #F9F9F9;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <!-- Image -->
+            <img src="{{ asset('uploads/images/' ~ profile.image) }}" class="card-img-top rounded-3" alt="Profile Image" style="height: 200px; object-fit: cover; border-bottom: 3px solid #580800;">
+            
+            <div class="card-body" style="padding: 15px;">
+                <!-- Spécialité et Réserver inline -->
+                <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 15px;">
+                    <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: rgb(18, 5, 3); font-weight: bold; font-size: 1.1rem;">{{ profile.specialite }}</h5>
+                    <a href="{{ path('reservation_form', {'profile': profile.id}) }}" class="btn btn-marron btn-sm" style="background-color:rgb(246, 237, 192); color: #8B4513; border-radius: 30px; font-weight: bold; padding: 8px 16px; font-size: 0.9rem; transition: background-color 0.3s;">
+                        <i class="bi bi-bookmark-plus"></i> Réserver
+                    </a>
+                </div>
+
+                <!-- Description -->
+                <p class="card-text" style="color: #555; font-size: 1rem; text-align: justify; margin-bottom: 15px;">{{ profile.description | slice(0, 100) }}...</p>
+                
+                <!-- Informations -->
+                <div class="d-flex justify-content-between" style="font-size: 0.9rem;">
+                    <span class="text-muted">Expérience: {{ profile.experience }} ans</span>
+                    <span class="text-muted">Localisation: {{ profile.localisation }}</span>
+                </div>
+            </div>
+            
+            <!-- Footer (Modifier, Supprimer, Voir plus) -->
+            <div class="card-footer d-flex justify-content-between" style="background-color: #F9F9F9; padding: 10px 15px;">
+                <a href="{{ path('profile_edit', {'id': profile.id}) }}" class="btn btn-outline-secondary btn-sm" style="border-radius: 25px; padding: 5px 10px; transition: background-color 0.3s;">
+                    <i class="bi bi-pencil-fill"></i> Modifier
+                </a>
+                
+               <form method="post" action="{{ path('profile_delete', {'id': profile.id}) }}" style="display:inline-block;" class="delete-btn" data-id="{{ profile.id }}" data-token="{{ csrf_token('delete' ~ profile.id) }}">
+    <button type="button" class="btn btn-outline-danger btn-sm" style="border-radius: 25px; padding: 5px 10px;">
+        <i class="bi bi-trash-fill"></i> Supprimer
+    </button>
+</form>
+
+                
+                <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#profileModal" 
+                    data-id="{{ profile.id }}" data-specialite="{{ profile.specialite }}" 
+                    data-description="{{ profile.description }}" data-experience="{{ profile.experience }}" 
+                    data-localisation="{{ profile.localisation }}" data-tarifHoraire="{{ profile.tarifHoraire }}" 
+                    data-image="{{ profile.image }}" style="border-radius: 25px; padding: 5px 12px; font-weight: bold;">
+                    <i class="bi bi-eye"></i> Voir plus
+                </button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <p class="text-center">Aucun profil trouvé.</p>
+    </div>
+    {% endfor %}
+</div>
+
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if profiles.getTotalItemCount() > profiles.getItemNumberPerPage() %}
+                    {% if profiles.getCurrentPageNumber() > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('profile_index', {'page': profiles.getCurrentPageNumber() - 1}) }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    {% endif %}
+
+                    {% for page in range(1, profiles.getPageCount()) %}
+                        <li class="page-item {{ page == profiles.getCurrentPageNumber() ? 'active' : '' }}">
+                            <a class="page-link" href="{{ path('profile_index', {'page': page}) }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+
+                    {% if profiles.getCurrentPageNumber() < profiles.getPageCount() %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('profile_index', {'page': profiles.getCurrentPageNumber() + 1}) }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal Voir Plus -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <!-- Header with Gradient Background -->
+            <div class="modal-header" style="background: linear-gradient(135deg, #580800, rgb(197, 145, 102), #580800); color: white; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title" id="profileModalLabel">Détails du Profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4" style="font-family: 'Roboto', sans-serif; background-color: #F5F5F5; color: #333;">
+                <!-- Ligne avec Image et Description côte à côte -->
+                <div class="d-flex mb-4">
+                    <!-- Image Profil -->
+                    <div class="me-4" style="flex: 0 0 250px;">
+                        <div class="card" style="border-radius: 12px; border: none; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);">
+                         <img id="modal-image" src="" alt="Profile Image" class="img-fluid" style="border-radius: 12px; height: 100%; object-fit: contain; width: 100%; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);">
+                        </div>
+                    </div>
+                    <!-- Description Profil à côté de l'image -->
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Description</h6>
+                        <p id="modal-description" class="p-3" style="background-color: #ffffff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+                </div>
+
+                <!-- Autres informations en dessous -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Spécialité</h6>
+                        <p id="modal-specialite" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Expérience</h6>
+                        <p id="modal-experience" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Localisation</h6>
+                        <p id="modal-localisation" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Tarif Horaire</h6>
+                        <p id="modal-tarifHoraire" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #F5F5F5; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <button type="button" class="btn" style="background-color: #580800; color: white;" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Voir Plus -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <!-- Header with Gradient Background -->
+            <div class="modal-header" style="background: linear-gradient(135deg, #580800, rgb(197, 145, 102), #580800); color: white; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title" id="profileModalLabel">Détails du Profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4" style="font-family: 'Roboto', sans-serif; background-color: #F5F5F5; color: #333;">
+                <!-- Ligne avec Image et Description côte à côte -->
+                <div class="d-flex mb-4">
+                    <!-- Image Profil -->
+                    <div class="me-4" style="flex: 0 0 100%;">
+                        <div class="card" style="border-radius: 12px; border: none; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);">
+                            <img id="modal-image" src="" alt="Profile Image" class="img-fluid" style="border-radius: 12px; height: 200px; object-fit: cover; width: 100%; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);">
+                        </div>
+                    </div>
+
+                    <!-- Description Profil à côté de l'image -->
+                    <div style="flex-grow: 1; max-width: 60%; margin-left: 20px;">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Description</h6>
+                        <p id="modal-description" class="p-3" style="background-color: #ffffff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+                </div>
+
+                <!-- Autres informations en dessous -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Spécialité</h6>
+                        <p id="modal-specialite" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Expérience</h6>
+                        <p id="modal-experience" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Localisation</h6>
+                        <p id="modal-localisation" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-dark" style="font-size: 1.2rem; color: #580800;">Tarif Horaire</h6>
+                        <p id="modal-tarifHoraire" class="p-3" style="background-color: #fff; border-radius: 10px; border: 1px solid #E0E0E0; font-size: 1rem; color: #555; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #F5F5F5; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <button type="button" class="btn" style="background-color: #580800; color: white;" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    var profileModal = document.getElementById('profileModal')
+    profileModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget
+        var image = button.getAttribute('data-image')
+        var specialite = button.getAttribute('data-specialite')
+        var description = button.getAttribute('data-description')
+        var experience = button.getAttribute('data-experience')
+        var localisation = button.getAttribute('data-localisation')
+        var tarifHoraire = button.getAttribute('data-tarifHoraire')
+
+        // Populate modal with the data
+        var modalImage = profileModal.querySelector('#modal-image')
+        var modalSpecialite = profileModal.querySelector('#modal-specialite')
+        var modalDescription = profileModal.querySelector('#modal-description')
+        var modalExperience = profileModal.querySelector('#modal-experience')
+        var modalLocalisation = profileModal.querySelector('#modal-localisation')
+        var modalTarifHoraire = profileModal.querySelector('#modal-tarifHoraire')
+
+        modalImage.src = '{{ asset('uploads/images/') }}' + '/' + image
+        modalSpecialite.textContent = specialite
+        modalDescription.textContent = description
+        modalExperience.textContent = experience
+        modalLocalisation.textContent = localisation
+        modalTarifHoraire.textContent = tarifHoraire
+    })
+</script>
+<!-- Modal for Deletion Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <!-- Header with Gradient Background -->
+            <div class="modal-header" style="background: linear-gradient(135deg, #580800, rgb(197, 145, 102), #580800); color: white; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmer la Suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4" style="font-family: 'Roboto', sans-serif; background-color: #F5F5F5; color: #333;">
+                <!-- Confirmation Message -->
+                <p style="font-size: 1.1rem; color: #555;">
+                    Êtes-vous sûr de vouloir supprimer ce profil ? Cette action est irréversible.
+                </p>
+            </div>
+
+            <div class="modal-footer" style="background-color: #F5F5F5; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <!-- Confirm Deletion and Cancel buttons -->
+                <form id="deleteForm" method="post" action="" style="display:inline-block;">
+                    <input type="hidden" name="_token" value="">
+                    <button type="submit" class="btn" style="background-color: #580800; color: white;">Confirmer</button>
+                </form>
+                <button type="button" class="btn" style="background-color: #8B4513; color: white;" data-bs-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Event listener for the delete button
+    var deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var profileId = button.getAttribute('data-id');
+            var deleteUrl = '{{ path('profile_delete', {'id': 'profileId'}) }}'.replace('profileId', profileId);
+            var csrfToken = button.getAttribute('data-token');
+            
+            // Set the action URL and CSRF token in the modal's form
+            var deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = deleteUrl;
+            deleteForm.querySelector('input[name="_token"]').value = csrfToken;
+            
+            // Show the confirmation modal
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        });
+    });
+</script>
+
+
+{% endblock %}

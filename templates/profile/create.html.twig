@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un Profil{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <!-- Section Titre et Description -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold" style="font-family: 'Arial', sans-serif; font-weight: bold; color:rgb(100, 102, 105);">
+            Créer votre Profil
+        </h1>
+        <p class="text-muted" style="font-size: 1.2rem; line-height: 1.6; color:#343A40;">
+            Remplissez les informations pour créer votre profil professionnel.
+        </p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Bouton Retour à la Liste -->
+            <div class="d-flex justify-content-start mb-4">
+                <a href="{{ path('profile_index') }}" class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center"
+                    style="border-radius: 50px; font-size: 1rem; padding: 8px 16px; color: #580800; border-color: #580800; transition: all 0.3s ease-in-out;">
+                    <i class="bi bi-arrow-left me-2"></i> Retour à la liste
+                </a>
+            </div>
+
+            <!-- Formulaire de Profil -->
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <!-- Carte de Profil -->
+            <div class="card shadow-lg rounded-4">
+                <div class="card-body p-4">
+
+                    <!-- Ajout d'une Image de Profil -->
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="position-relative" style="width: 100%; max-width: 350px;">
+                            <!-- Affichage de l'image de profil -->
+                            <div class="placeholder-image bg-secondary rounded-3 d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 100%; height: auto; max-width: 350px; color: #fff;">
+                                <img id="profile-image" src="" alt="Aperçu de l'image" class="img-fluid rounded-3" style="display: none; max-width: 100%;">
+                                <i class="bi bi-person fs-1" id="default-icon" style="display: block;"></i>
+                            </div>
+                            
+                            <!-- Bouton circulaire pour changer l'image -->
+                            <button type="button" class="btn shadow-sm position-absolute bottom-0 start-50 translate-middle-x mb-2"
+                                    style="width: 60px; height: 60px; background-color: white; color: #580800; border: 2px solid #580800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translateY(50%); transition: all 0.3s ease;"
+                                    onclick="document.getElementById('{{ form.image.vars.id }}').click()"
+                                    onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                                <i class="bi bi-camera"></i>
+                            </button>
+
+                            <!-- Champ d'entrée caché pour l'image -->
+                            {{ form_widget(form.image, { 'attr': { 'class': 'd-none', 'onchange': 'previewImage(event)' } }) }}
+                        </div>
+                    </div>
+
+                    <!-- Informations du Profil -->
+                    <div class="mb-5">
+                        <h4 class="text-muted mb-4" style="font-size: 1.5rem;">Informations Générales</h4>
+
+                        <!-- Champs multiples sur une ligne avec validation en temps réel -->
+                        <div class="row mb-4">
+                            <!-- Spécialité -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.specialite.vars.id }}" class="form-label fw-semibold">
+                                    <i class="bi bi-briefcase me-2"></i> Spécialité
+                                </label>
+                                {{ form_widget(form.specialite, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Entrez votre spécialité', 'onfocus': 'this.style.borderColor="#580800";' } }) }}
+                                {% if form.specialite.vars.errors|length > 0 %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.specialite.vars.errors %}
+                                            <p>{{ error.message }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Expérience -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.experience.vars.id }}" class="form-label fw-semibold">
+                                    <i class="bi bi-person-check me-2"></i> Expérience
+                                </label>
+                                {{ form_widget(form.experience, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Années d\'expérience' } }) }}
+                                {% if form.experience.vars.errors|length > 0 %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.experience.vars.errors %}
+                                            <p>{{ error.message }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="{{ form.description.vars.id }}" class="form-label fw-semibold">
+                                <i class="bi bi-pencil me-2"></i> Description
+                            </label>
+                            {{ form_widget(form.description, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Décrivez votre profil' } }) }}
+                            {% if form.description.vars.errors|length > 0 %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.description.vars.errors %}
+                                        <p>{{ error.message }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tarif Horaire -->
+                        <div class="mb-4">
+                            <label for="{{ form.tarifHoraire.vars.id }}" class="form-label fw-semibold">
+                                <i class="bi bi-currency-euro me-2"></i> Tarif Horaire
+                            </label>
+                            {{ form_widget(form.tarifHoraire, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Exemple : 50€/heure' } }) }}
+                            {% if form.tarifHoraire.vars.errors|length > 0 %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.tarifHoraire.vars.errors %}
+                                        <p>{{ error.message }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Localisation et Disponibilité dans une même ligne -->
+                        <div class="row mb-4">
+                            <!-- Localisation -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.localisation.vars.id }}" class="form-label fw-semibold">
+                                    <i class="bi bi-geo-alt me-2"></i> Localisation
+                                </label>
+                                {{ form_widget(form.localisation, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Ville ou région' } }) }}
+                                {% if form.localisation.vars.errors|length > 0 %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.localisation.vars.errors %}
+                                            <p>{{ error.message }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Disponibilité -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.disponibilite.vars.id }}" class="form-label fw-semibold">
+                                    <i class="bi bi-clock me-2"></i> Disponibilité
+                                </label>
+                                {{ form_widget(form.disponibilite, { 'attr': { 'class': 'form-control shadow-sm p-3', 'placeholder': 'Disponibilité actuelle' } }) }}
+                                {% if form.disponibilite.vars.errors|length > 0 %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.disponibilite.vars.errors %}
+                                            <p>{{ error.message }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Artisan -->
+                        <div class="mb-4">
+                            <label for="{{ form.artisan.vars.id }}" class="form-label fw-semibold">
+                                <i class="bi bi-wrench me-2"></i> Artisan
+                            </label>
+                            {{ form_widget(form.artisan, { 'attr': { 'class': 'form-control shadow-sm p-3' } }) }}
+                            {% if form.artisan.vars.errors|length > 0 %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.artisan.vars.errors %}
+                                        <p>{{ error.message }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Bouton d'enregistrement -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary px-4 py-2 shadow-lg" 
+                                    style="background-color: #580800; border-color: #580800; transition: all 0.3s ease-in-out;"
+                                    onmouseover="this.style.backgroundColor='#4e0600'; this.style.borderColor='#4e0600';"
+                                    onmouseout="this.style.backgroundColor='#580800'; this.style.borderColor='#580800';">
+                                Créer
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Afficher l'aperçu de l'image
+                const image = document.getElementById('profile-image');
+                const icon = document.getElementById('default-icon');
+                image.src = e.target.result;
+                image.style.display = 'block';  // Afficher l'image
+                icon.style.display = 'none';   // Masquer l'icône par défaut
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+{% endblock %}

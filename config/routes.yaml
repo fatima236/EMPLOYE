@@ -1,0 +1,37 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+admin_artisan_list:
+    path: /admin/artisans
+    controller: App\Controller\ArtisanController::index
+
+artisan_create:
+    path: /admin/artisans/create
+    controller: App\Controller\ArtisanController::create
+reservation_update:
+    path: /reservation/update/{id}
+    controller: App\Controller\ReservationController::update
+    methods: [POST]
+artisan_edit:
+    path: /admin/artisans/{id}/edit
+    controller: App\Controller\ArtisanController::edit
+
+artisan_delete:
+    path: /admin/artisans/{id}/delete
+    controller: App\Controller\ArtisanController::delete
+update_like_dislike:
+    path: /profile/{profileId}/update-like-dislike
+    controller: App\Controller\ProfileController::updateLikeDislike
+
+subscribe:
+  path: /subscribe
+  controller: App\Controller\SubscribeController::subscribe
+  methods: [POST]
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+app_logout:
+    path: /logout

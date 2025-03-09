@@ -1,0 +1,89 @@
+<?php
+namespace App\Controller;
+
+use App\Entity\Notification;
+use App\Repository\NotificationRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class NotificationController extends AbstractController
+{
+    private $entityManager;
+
+    // Injection de EntityManagerInterface dans le constructeur
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @Route("/notifications", name="notification_list")
+     */
+    public function list(NotificationRepository $notificationRepository): Response
+    {
+        // Récupérer les notifications non lues
+        $notifications = $notificationRepository->findUnreadNotifications();
+
+        // Compter le nombre de notifications non lues
+        $notificationCount = count($notifications);
+
+        // Passer 'notificationCount' à la vue
+        return $this->render('notification/list.html.twig', [
+            'notifications' => $notifications,
+            'notificationCount' => $notificationCount,  // Ajouter la variable notificationCount
+        ]);
+    }
+
+
+    /**
+     * @Route("/notifications/read/{id}", name="notification_mark_as_read")
+     */
+    public function markAsRead(Notification $notification): Response
+    {
+        // Marquer la notification comme lue
+        $notification->setIsRead(true);
+        $this->entityManager->flush();  // Utiliser entityManager au lieu de getDoctrine()
+
+        $this->addFlash('success', 'Notification marquée comme lue.');
+
+        // Rediriger vers la liste des notifications
+        return $this->redirectToRoute('notification_list');
+    }
+
+    /**
+     * @Route("/notifications/delete/{id}", name="notification_delete")
+     */
+    public function delete(Notification $notification): Response
+    {
+        // Supprimer la notification
+        $this->entityManager->remove($notification);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Notification supprimée.');
+
+        // Rediriger vers la liste des notifications
+        return $this->redirectToRoute('notification_list');
+    }
+
+    /**
+     * @Route("/notifications/create", name="notification_create")
+     */
+    public function create(): Response
+    {
+        // Créer une nouvelle notification (exemple)
+        $notification = new Notification('Ceci est une notification');
+        $notification->setIsRead(false);
+        $notification->setCreatedAt(new \DateTime());
+
+        // Persister la notification
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Notification créée.');
+
+        // Rediriger vers la liste des notifications
+        return $this->redirectToRoute('notification_list');
+    }
+}

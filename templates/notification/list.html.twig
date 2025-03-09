@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+</head>
+<body>
+    <h1>Notifications</h1>
+
+    <p>Il y a {{ notificationCount }} notifications non lues.</p>
+
+    <ul>
+        {% for notification in notifications %}
+            <li>
+                {{ notification.message }}
+                {% if not notification.isRead %}
+                    <strong>(Non lue)</strong>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

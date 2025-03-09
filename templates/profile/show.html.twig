@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Profil{% endblock %}
+
+{% block body %}
+    <h1>Détails du Profil</h1>
+
+    {# Si message est défini, l'afficher. Sinon, afficher le profil de l'artisan #}
+    {% if message %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% else %}
+        <p><strong>Nom de l'employé :</strong> {{ profile.artisan.fullName }}</p>
+        <p><strong>Email :</strong> {{ profile.artisan.email }}</p>
+        <p><strong>Adresse :</strong> {{ profile.artisan.address }}</p>
+        <p><strong>Description :</strong> {{ profile.description }}</p>
+    {% endif %}
+    
+    <a href="{{ path('profile_index') }}">Retour à la liste des profils</a>
+{% endblock %}

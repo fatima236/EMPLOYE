@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'employé{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <!-- Section Titre et Description -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold" style="color: #2C3E50;">Modifier l'employé</h1>
+        <p class="text-muted">Mettez à jour les informations de employé de manière précise et professionnelle.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Bouton Retour à la Liste avec icône -->
+            <div class="d-flex justify-content-start mb-4">
+                <a href="{{ path('admin_artisan_list') }}" class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center"
+                   style="border-radius: 25px; padding: 8px 15px; background-color: #580800; color: white; font-weight: 500; border: 2px solid #580800; transition: all 0.3s ease;"
+                   onmouseover="this.style.backgroundColor='#dfba69'; this.style.borderColor='#dfba69';"
+                   onmouseout="this.style.backgroundColor='#580800'; this.style.borderColor='#580800';">
+                    <i class="bi bi-arrow-left me-2"></i> Retour à la liste
+                </a>
+            </div>
+
+            <!-- Formulaire de Modification -->
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="card border-0 shadow-lg rounded-4" style="background-color: #f9f9f9; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                <div class="card-body p-5">
+                    <!-- Section d'entête -->
+                    <h2 class="h5 mb-4 text-secondary border-bottom pb-3">Informations de l'Artisan</h2>
+
+                    <!-- Nom complet avec icône -->
+                    <div class="form-group mb-4">
+                        <label for="{{ form.fullName.vars.id }}" class="form-label fw-semibold text-dark">Nom Complet</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0" style="border-radius: 10px 0 0 10px;">
+                                <i class="bi bi-person-fill text-primary"></i>
+                            </span>
+                            {{ form_widget(form.fullName, { 'attr': { 
+                                'class': 'form-control border rounded-3 p-3',
+                                'placeholder': 'Entrez le nom complet',
+                                'style': 'background-color: #f8f9fa; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: border-color 0.3s ease;' 
+                            } }) }}
+                        </div>
+                        {% if form.fullName.vars.errors|length > 0 %}
+                            <div class="text-danger mt-1">
+                                {{ form_errors(form.fullName) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email avec icône -->
+                    <div class="form-group mb-4">
+                        <label for="{{ form.email.vars.id }}" class="form-label fw-semibold text-dark">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0" style="border-radius: 10px 0 0 10px;">
+                                <i class="bi bi-envelope-fill text-primary"></i>
+                            </span>
+                            {{ form_widget(form.email, { 'attr': { 
+                                'class': 'form-control border rounded-3 p-3',
+                                'placeholder': 'Entrez l\'email',
+                                'style': 'background-color: #f8f9fa; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: border-color 0.3s ease;' 
+                            } }) }}
+                        </div>
+                        {% if form.email.vars.errors|length > 0 %}
+                            <div class="text-danger mt-1">
+                                {{ form_errors(form.email) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Adresse avec icône -->
+                    <div class="form-group mb-4">
+                        <label for="{{ form.address.vars.id }}" class="form-label fw-semibold text-dark">Adresse</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0" style="border-radius: 10px 0 0 10px;">
+                                <i class="bi bi-house-door-fill text-primary"></i>
+                            </span>
+                            {{ form_widget(form.address, { 'attr': { 
+                                'class': 'form-control border rounded-3 p-3',
+                                'placeholder': 'Entrez l\'adresse',
+                                'style': 'background-color: #f8f9fa; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: border-color 0.3s ease;' 
+                            } }) }}
+                        </div>
+                        {% if form.address.vars.errors|length > 0 %}
+                            <div class="text-danger mt-1">
+                                {{ form_errors(form.address) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Bouton Mettre à jour avec icône -->
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-primary px-5 py-3 shadow-lg"
+                           style="background: linear-gradient(135deg, #580800, #dfba69,rgb(77, 43, 22)); color: white; border-radius: 30px; padding: 12px 30px; font-size: 16px; letter-spacing: 2px; font-family: 'Roboto', sans-serif; transition: all 0.3s ease; display: inline-block;">
+                            <i class="bi bi-check-circle"></i> Mettre à jour
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Profils{% endblock %}
+
+{% block body %}
+<style>
+    .main-content {
+        padding: 40px 0;
+        text-align: center;
+    }
+    h1 {
+        font-size: 36px;
+        margin-bottom: 30px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .btn-view-reservations {
+        background: linear-gradient(135deg, #3498db, #9b59b6);
+        border: none;
+        padding: 12px 25px;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        border-radius: 5px;
+        transition: background 0.3s ease, transform 0.3s ease;
+        margin-bottom: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-view-reservations:hover {
+        background: linear-gradient(135deg, #9b59b6, #3498db);
+        transform: translateY(-3px);
+    }
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+    .col-md-4 {
+        flex: 0 0 calc(33.333% - 20px); /* Trois colonnes avec un espace uniforme */
+        max-width: calc(33.333% - 20px);
+        display: flex;
+    }
+    @media (max-width: 768px) {
+        .col-md-4 {
+            flex: 0 0 calc(100% - 20px); /* Une seule colonne sur mobile */
+            max-width: calc(100% - 20px);
+        }
+    }
+    .profile-card {
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    .profile-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 5px solid #3498db; /* Bordure de couleur assortie */
+    }
+    .profile-card-body {
+        padding: 20px;
+        text-align: left;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .profile-card-body h5 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    .profile-card-body p {
+        color: #7f8c8d;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #9b59b6);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #fff;
+        border-radius: 5px;
+        transition: background 0.3s ease, transform 0.3s ease;
+        align-self: center;
+        margin-top: 10px;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #9b59b6, #3498db);
+        transform: translateY(-3px);
+    }
+    .no-profiles {
+        font-size: 18px;
+        color: #7f8c8d;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container main-content">
+    <h1>Reservations</h1>
+    <a href="{{ path('reservation_list') }}" class="btn-view-reservations">Voir la liste des réservations</a>
+    <div class="row">
+        {% for artisan in artisans %}
+            {% for profile in artisan.profiles %}
+                <div class="col-md-4">
+                    <div class="profile-card">
+                        <img src="{{ asset('uploads/images/' ~ profile.image) }}" alt="Image de {{ artisan.fullName }}">
+                        <div class="profile-card-body">
+                            <h5>Profil de {{ artisan.fullName }}</h5>
+                            <p><strong>Spécialité :</strong> {{ profile.specialite }}</p>
+                            <p><strong>Description :</strong> {{ profile.description }}</p>
+                            <p><strong>Tarif horaire :</strong> {{ profile.tarifHoraire }}€</p>
+                        </div>
+                        <div class="text-center" style="padding-bottom: 20px;">
+                            <a href="{{ path('reservation_form', {'profile': profile.id}) }}" class="btn btn-primary">Réserver</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% if artisans is empty %}
+        <p class="no-profiles">Aucun profil disponible.</p>
+    {% endif %}
+</div>  
+{% endblock %}

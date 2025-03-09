@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphique des employés et Profils</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #580800, rgb(197, 145, 102), #580800);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+        color: #333;
+      }
+
+      .container {
+        background-color: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        width: 90%;
+        max-width: 1000px;
+        margin-top: 30px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        color: #3e4e5e;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-evenly;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        width: 25%;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        text-align: center;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .stat-card h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 10px 0;
+        color: #580800;
+      }
+
+      .stat-card p {
+        font-size: 1rem;
+        color: #888;
+        margin-bottom: 20px;
+      }
+
+      .stat-card .bi {
+        font-size: 2.5rem;
+        color: #580800;
+        margin-bottom: 10px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 12px 30px;
+        background:linear-gradient(135deg, #580800, #dfba69,rgb(77, 43, 22));
+        color: white;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .back-button:hover {
+        background-color: #4c1600;
+        transform: translateY(-5px);
+      }
+
+      .back-button span {
+        margin-left: 10px;
+        font-size: 1rem;
+        font-weight: 400;
+        color: #fff;
+      }
+
+      .chart-container {
+        width: 100%;
+        max-width: 850px;
+        margin: 0 auto;
+      }
+
+      canvas {
+        border-radius: 10px;
+        border: 2px solid #ddd;
+        background-color: #f9f9f9;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ path('admin_artisan_list') }}" class="back-button">
+            <i class="bi bi-arrow-left-circle"></i>  
+            <span>Retour vers la liste des Artisans avec plus de détails</span>
+        </a>
+        <h1>Graphique des Artisans et Profils</h1>
+
+        <!-- Statistiques -->
+        <div class="stats">
+            <div class="stat-card">
+                <i class="bi bi-person-fill"></i>
+                <h3>{{ totalArtisans }}</h3>
+                <p>Total Artisans</p>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-person-lines-fill"></i>
+                <h3>{{ totalProfiles }}</h3>
+                <p>Total Profils</p>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-calendar-check"></i>
+                <h3>{{ totalReservations }}</h3>
+                <p>Total Réservations</p>
+            </div>
+        </div>
+
+        <!-- Graphique -->
+        <div class="chart-container">
+            <canvas id="testChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('testChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chartData.labels|json_encode() | raw }},
+                datasets: [{
+                    label: 'Nombre de Profils',
+                    data: {{ chartData.data|json_encode() | raw }},
+                    backgroundColor: 'rgba(101, 26, 19, 0.6)',
+                    borderColor: 'rgba(101, 26, 19, 1)',
+                    borderWidth: 2,
+                    barThickness: 50,
+                    hoverBackgroundColor: 'rgba(101, 26, 19, 0.9)',
+                    hoverBorderColor: 'rgba(101, 26, 19, 1)',
+                    hoverBorderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'x',
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: {{ maxProfiles }},
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                size: 14,
+                                family: 'Roboto',
+                                weight: 'bold',
+                            },
+                            color: '#333',
+                        },
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 14,
+                                family: 'Roboto',
+                                weight: 'normal',
+                            },
+                            color: '#333',
+                        },
+                    },
+                },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(101, 26, 19, 0.8)',
+                        titleFont: {
+                            size: 16,
+                            family: 'Roboto',
+                        },
+                        bodyFont: {
+                            size: 14,
+                            family: 'Roboto',
+                        },
+                        bodyColor: '#fff',
+                    },
+                },
+            }
+        });
+    </script>
+</body>
+</html>
