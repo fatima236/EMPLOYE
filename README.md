@@ -58,3 +58,63 @@ Suivez ces étapes pour exécuter le projet sur votre machine locale :
    ```bash
    git clone https://github.com/fatima236/gestion-employes.git
    cd gestion-employes
+   Démarrer les conteneurs Docker :
+
+2.bash
+Copy
+docker-compose up -d
+Installer les dépendances Composer :
+
+3.bash
+Copy
+docker-compose exec php composer install
+Configurer la base de données :
+
+Créez la base de données :
+
+4.bash
+Copy
+docker-compose exec php bin/console doctrine:database:create
+Exécutez les migrations :
+
+5.bash
+Copy
+docker-compose exec php bin/console doctrine:migrations:migrate
+Charger les données de test (optionnel) :
+
+6.bash
+Copy
+docker-compose exec php bin/console doctrine:fixtures:load
+Accéder à l'application :
+Ouvrez votre navigateur et accédez à http://localhost:8080.
+
+
+📝 Licence
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+
+🙌 Contribution
+Les contributions sont les bienvenues ! Si vous souhaitez contribuer, veuillez suivre ces étapes :
+
+Forkez le projet.
+
+Créez une branche pour votre fonctionnalité (git checkout -b feature/NouvelleFonctionnalité).
+
+Committez vos changements (git commit -m 'Ajouter une nouvelle fonctionnalité').
+
+Pushez la branche (git push origin feature/NouvelleFonctionnalité).
+
+Ouvrez une Pull Request.
+
+📧 Contact
+Si vous avez des questions ou des suggestions, n'hésitez pas à me contacter :
+
+Nom : Fatima Zahra BOUAYADI
+
+Email : fatimazahrabouayadi96@gmail.com
+
+LinkedIn : Fatima Zahra BOUAYADI
+
+GitHub : fatima236
+
+Merci d'avoir visité ce projet ! 😊
+
